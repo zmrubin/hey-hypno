@@ -16,11 +16,30 @@ import { selectFavourites } from '../../redux/selectors'
 interface Props {
   navigation: StackNavigationProp<HomeParamList, 'HomeScreen'>
 }
+interface HypnoGPTMeditation {
+  id: string
+  title: string
+  description: string
+  url: string
+}
+
+export function useFeed() {
+  const [feed, setFeed] = React.useState<HypnoGPTMeditation[]>([])
+  React.useEffect(() => {
+    fetch('https://hypnogpt.com/api/audio/feed')
+      .then((data) => data.json())
+      .then((data) => setFeed(data))
+  }, [])
+  return feed
+}
 
 export default function Home({ navigation }: Props) {
   const textColor = useThemeColor({}, 'text')
 
   const favourites = useAppSelector(selectFavourites)
+  const feed = useFeed()
+
+  // console.log(feed)
 
   const renderPopularCard = ({ item }: MeditationItem) => {
     return (
@@ -55,6 +74,7 @@ export default function Home({ navigation }: Props) {
         onPress={() =>
           navigation.navigate('PlayScreen', {
             id: item.id,
+            // feedId: item.feedId,
           })
         }
       >
@@ -75,16 +95,22 @@ export default function Home({ navigation }: Props) {
 
   return (
     <Screen scroll>
-      <Text style={styles.title}>POPULAR</Text>
+      <Text style={styles.title}>HypnoGPT Meditations</Text>
       <FlatList
         style={styles.cards}
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={meditations.popular}
+        data={meditations.popular.map((med, i) => ({
+          ...med,
+          title: feed.length > 0 ? feed[i].title : med.title,
+          subtitle: feed.length > 0 ? feed[i].description : med.subtitle,
+          url: feed.length > 0 ? feed[i].url : '',
+          // feedId: feed.length > 0 ? feed[i].id : null,
+        }))}
         renderItem={renderPopularCard}
         keyExtractor={({ id }) => id}
       />
-      <Text style={styles.title}>ANXIETY</Text>
+      {/* <Text style={styles.title}>ANXIETY</Text>
       <FlatList
         style={styles.cards}
         horizontal
@@ -101,7 +127,7 @@ export default function Home({ navigation }: Props) {
         data={meditations.sleep}
         renderItem={renderCard}
         keyExtractor={({ id }) => id}
-      />
+      /> */}
       {favourites.length > 0 && (
         <>
           <Text style={styles.title}>FAVOURITE</Text>

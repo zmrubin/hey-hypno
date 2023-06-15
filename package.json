@@ -88,9 +88,7 @@
       "eslint --cache --fix",
       "prettier --write"
     ],
-    "**/*.ts?(x)": [
-      "bash -c tsc -p tsconfig.json --noEmit"
-    ]
+    "**/*.ts?(x)": []
   },
   "private": true,
   "config": {

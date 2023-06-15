@@ -24,6 +24,7 @@ export type HomeParamList = {
   HomeScreen: NO_PARAMS
   PlayScreen: {
     id: string
+    // feedId?: string
   }
 }
 

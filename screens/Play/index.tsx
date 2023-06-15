@@ -17,6 +17,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import { selectFavourites, selectFilePaths } from '../../redux/selectors'
 import FavouriteButton from '../../components/FavouriteButton'
 import { Meditation } from '../../data/meditations'
+import { useFeed } from '../Home'
 
 type PlayRouteProp = RouteProp<HomeParamList, 'PlayScreen'>
 
@@ -30,7 +31,16 @@ interface Props {
 }
 export default function PlayScreen({ route, navigation }: Props) {
   const { id } = route.params
-  const meditation = useMeditation(id)
+  const feed = useFeed()
+  const med = useMeditation(id)
+  const meditation = {
+    ...med,
+    // TODO: find the feed item with feedId instead of using the first one
+    // title: feed.length > 0 ? feed.find((m) => m.id == feedId)?.title : med?.title,
+    title: feed.length > 0 ? feed[0].title : med?.title,
+    subtitle: feed.length > 0 ? feed[0].description : med?.subtitle,
+    uri: feed.length > 0 ? feed[0].url : med?.uri,
+  }
   const favourites = useAppSelector(selectFavourites)
   const [isLoadingAudio, setIsLoadingAudio] = React.useState(true)
   const [isPlaying, setIsPlaying] = React.useState(false)
